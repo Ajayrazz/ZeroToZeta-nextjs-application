@@ -14,9 +14,8 @@ const AnimatedBackground = () => {
     if (!ctx) return
     
     const particles: Particle[] = []
-    const particleCount = 120  // Reduced from 150 to 120
+    const particleCount = 120
     
-    // Set canvas dimensions
     const handleResize = () => {
       if (!canvas) return
       canvas.width = window.innerWidth
@@ -26,7 +25,6 @@ const AnimatedBackground = () => {
     window.addEventListener('resize', handleResize)
     handleResize()
     
-    // Particle class
     class Particle {
       x: number = 0
       y: number = 0
@@ -43,11 +41,11 @@ const AnimatedBackground = () => {
         if (!canvas) return
         this.x = Math.random() * canvas.width
         this.y = Math.random() * canvas.height
-        this.originalSize = this.size = Math.random() * 2.5 + 0.8  // Slightly reduced from 3+1
-        this.maxSize = this.originalSize * 1.8  // Reduced from 2x
+        this.originalSize = this.size = Math.random() * 2.5 + 0.8
+        this.maxSize = this.originalSize * 1.8
         this.speedX = (Math.random() - 0.5) * 0.6
         this.speedY = (Math.random() - 0.5) * 0.6
-        this.alpha = Math.random() * 0.4 + 0.15  // Slightly reduced opacity
+        this.alpha = Math.random() * 0.4 + 0.15
         this.color = this.getRandomColor()
       }
       
@@ -58,7 +56,6 @@ const AnimatedBackground = () => {
           'rgba(86, 124, 194, alpha)',  // Blue
           'rgba(220, 130, 240, alpha)', // Pink
         ]
-        
         const color = colors[Math.floor(Math.random() * colors.length)]
         return color.replace('alpha', this.alpha.toString())
       }
@@ -68,25 +65,18 @@ const AnimatedBackground = () => {
         this.x += this.speedX
         this.y += this.speedY
         
-        // Pulse size effect
         this.size = this.originalSize + Math.sin(Date.now() * this.pulseSpeed) * (this.maxSize - this.originalSize)
         
-        // Bounce off edges with slight randomization
         if (this.x > canvas.width || this.x < 0) {
           this.speedX = -this.speedX * (0.9 + Math.random() * 0.2)
-          
-          // Add slight vertical movement when bouncing horizontally
           this.speedY += (Math.random() - 0.5) * 0.2
         }
         
         if (this.y > canvas.height || this.y < 0) {
           this.speedY = -this.speedY * (0.9 + Math.random() * 0.2)
-          
-          // Add slight horizontal movement when bouncing vertically
           this.speedX += (Math.random() - 0.5) * 0.2
         }
-        
-        // Cap speed to prevent particles from accelerating too much
+
         const maxSpeed = 1.5
         this.speedX = Math.max(Math.min(this.speedX, maxSpeed), -maxSpeed)
         this.speedY = Math.max(Math.min(this.speedY, maxSpeed), -maxSpeed)
@@ -100,13 +90,11 @@ const AnimatedBackground = () => {
         ctx.fill()
       }
     }
-    
-    // Initialize particles
+
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle())
     }
-    
-    // Connect particles with lines if they're close enough
+
     const connectParticles = () => {
       if (!ctx) return
       
@@ -119,7 +107,6 @@ const AnimatedBackground = () => {
           if (distance < 150) {
             const opacity = 1 - (distance / 150)
             ctx.beginPath()
-            // Create a gradient line
             const gradient = ctx.createLinearGradient(
               particles[i].x, 
               particles[i].y, 
@@ -138,54 +125,52 @@ const AnimatedBackground = () => {
         }
       }
     }
-    
-    // Animation loop
+
     const animate = () => {
       if (!ctx || !canvas) return
-      
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      
-      particles.forEach(particle => {
-        particle.update()
-        particle.draw()
+      ctx.fillStyle = 'black'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      particles.forEach(p => {
+        p.update()
+        p.draw()
       })
-      
+
       connectParticles()
-      
       requestAnimationFrame(animate)
     }
-    
+
     animate()
-    
+
     return () => {
       window.removeEventListener('resize', handleResize)
     }
   }, [])
-  
+
   return (
     <>
       <canvas 
         ref={canvasRef} 
-        className="fixed top-0 left-0 w-full h-full -z-10 opacity-75" // Reduced from opacity-80
+        className="fixed top-0 left-0 w-full h-full -z-10"
       />
       
-      {/* Gradient orbs */}
-      <div className="fixed top-1/3 -left-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse-slow opacity-30 -z-20"></div>
-      <div className="fixed bottom-20 -right-40 w-[30rem] h-[30rem] bg-accent/20 rounded-full blur-3xl animate-pulse-slow opacity-30 -z-20 animation-delay-2000"></div>
-      <div className="fixed top-2/3 right-1/4 w-64 h-64 bg-pink-400/10 rounded-full blur-3xl animate-pulse-slow opacity-20 -z-20 animation-delay-4000"></div>
-      
+      {/* Glowing orbs - subtle on black */}
+      <div className="fixed top-1/3 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow opacity-20 -z-20"></div>
+      <div className="fixed bottom-20 -right-40 w-[30rem] h-[30rem] bg-accent/10 rounded-full blur-3xl animate-pulse-slow opacity-20 -z-20 animation-delay-2000"></div>
+      <div className="fixed top-2/3 right-1/4 w-64 h-64 bg-pink-400/10 rounded-full blur-3xl animate-pulse-slow opacity-15 -z-20 animation-delay-4000"></div>
+
       {/* Subtle grid pattern */}
       <div 
-        className="fixed inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-[0.02] -z-20 pointer-events-none"
+        className="fixed inset-0 bg-[url('/grid-pattern.svg')] bg-repeat opacity-[0.015] -z-20 pointer-events-none"
         style={{ backgroundSize: '30px 30px' }}
       ></div>
-      
+
       {/* Animated radial gradients */}
       <motion.div 
-        className="fixed top-1/2 left-1/2 w-[100vh] h-[100vh] rounded-full blur-3xl -z-20 opacity-[0.03] pointer-events-none"
+        className="fixed top-1/2 left-1/2 w-[100vh] h-[100vh] rounded-full blur-3xl -z-20 opacity-[0.02] pointer-events-none"
         initial={{ opacity: 0.01 }}
         animate={{ 
-          opacity: [0.01, 0.03, 0.01],
+          opacity: [0.01, 0.02, 0.01],
           scale: [0.8, 1.2, 0.8]
         }}
         transition={{ 
@@ -198,7 +183,7 @@ const AnimatedBackground = () => {
           transform: 'translate(-50%, -50%)'
         }}
       />
-      
+
       <motion.div 
         className="fixed top-1/3 left-1/4 w-[60vh] h-[60vh] rounded-full blur-3xl -z-20 opacity-[0.02] pointer-events-none"
         initial={{ opacity: 0.01 }}

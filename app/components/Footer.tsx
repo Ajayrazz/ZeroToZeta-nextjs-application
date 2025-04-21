@@ -12,7 +12,7 @@ const Footer = ({ className = '' }: FooterProps) => {
   const currentYear = new Date().getFullYear()
   
   return (
-    <footer className={`bg-secondary/80 backdrop-blur-lg py-10 mt-10 relative z-10 border-t border-accent/10 ${className}`}>
+    <footer className={` backdrop-blur-lg py-10 mt-10 relative z-10 border-t  ${className}`}>
       {/* Back to top button */}
       <motion.a 
         href="#" 
